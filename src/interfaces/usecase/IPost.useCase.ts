@@ -1,4 +1,5 @@
 import IPost from "../../entities/post.entity"
+import { IReport } from "../../entities/report.entity"
 import IUser from "../../entities/user.entity"
 
 export interface IPostUseCase{
@@ -11,4 +12,5 @@ export interface IPostUseCase{
   getLiked(userId: string): Promise<IPost[]>
   isSaved(postId:string,userId:string):Promise<IUser|null>
   getAllSavedPosts(user_id:string):Promise<IPost[]>
+  createReport(post_id: string, reporter_id: string, description: string): Promise<IReport|string>
 }

@@ -4,6 +4,8 @@ import { PostModel } from "../frameworks/models/post.model";
 import { IPostRepository } from "../interfaces/repositories/IPost.repository";
 import IUser from "../entities/user.entity";
 import { UserModel } from "../frameworks/models/user.Model";
+import { reportModel } from "../frameworks/models/report.Model";
+import { IReport } from "../entities/report.entity";
 export class PostRepository implements IPostRepository {
   async postCreate(data: IPost): Promise<IPost> {
     try {
@@ -96,6 +98,8 @@ export class PostRepository implements IPostRepository {
             updatedAt: 1,
             'details.userName': 1,
             'details.profileImg': 1,
+            'details.name':1,
+            'details.bio':1,
             likes: 1
           }
         }
@@ -118,7 +122,9 @@ export class PostRepository implements IPostRepository {
   async postDelete(postId: string): Promise<IPost | null> {
     try {
       const deletePost = await PostModel.findByIdAndDelete(postId)
-
+      if (deletePost) {
+        await reportModel.deleteMany({ postId: postId });
+      }
       return deletePost as IPost | null
     } catch (error) {
       throw error
@@ -244,17 +250,47 @@ export class PostRepository implements IPostRepository {
 
   async savedPosts(user_id: string): Promise<IPost[]> {
     try {
-    
+
       const user = await UserModel.findById(user_id).exec()
       const savedPostIds = user?.saved?.map(id => new mongoose.Types.ObjectId(id));
-      console.log("what happening",savedPostIds);
-      
+      console.log("what happening", savedPostIds);
+
       const posts = await PostModel.find({ _id: { $in: savedPostIds } }).exec()
-      
+
       return posts as IPost[]
     } catch (error) {
       throw error
     }
   }
- 
+  async createReport(postId: string, reporterId: string, description: string): Promise<IReport> {
+    console.log("postid in repository", postId);
+
+    try {
+      const newReport = new reportModel({
+        postId,
+        reporterId,
+        description
+      });
+
+      await newReport.save();
+      return newReport.toObject();
+    } catch (error) {
+      throw error
+    }
+  }
+  async existingReport(postId: string, reporterId: string): Promise<boolean> {
+    try {
+      const objectPostId = new mongoose.Types.ObjectId(postId);
+      const objectReporterId = new mongoose.Types.ObjectId(reporterId);
+      const reportExists = await reportModel.findOne({
+        postId: objectPostId,
+        reporterId: objectReporterId
+      }).exec();
+      return reportExists !== null;
+    } catch (error) {
+      console.error('Error checking existing report:', error);
+      throw error;
+    }
+  }
+
 }

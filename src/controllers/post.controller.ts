@@ -145,16 +145,31 @@ export class PostController {
   async postsSaved(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       console.log("reaching savedPost");
-      
+
       const user = req.user as JwtPayload
       const userId = user.id
       const response = await this.postUseCase.getAllSavedPosts(userId)
-      console.log("saved post in controller",response);
-      
+      console.log("saved post in controller", response);
+
       res.status(201).json({ status: "success", data: response })
     } catch (error: any) {
       console.log(error);
       res.status(400).json({ message: error.message })
+    }
+  }
+  async newReport(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const user = req.user as JwtPayload
+      const reporter_id = user.id
+      const { post_id, description } = req.body
+      console.log("controller for report",post_id);
+      
+      const response = await this.postUseCase.createReport(post_id, reporter_id, description)
+      res.status(201).json({ status: "success", data: response })
+    } catch (error: any) {
+      console.log(error);
+      res.status(400).json({ message: error.message })
+
     }
   }
 }

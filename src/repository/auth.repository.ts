@@ -15,7 +15,7 @@ export class AuthRepository implements IAuthRepository {
   }
   async checkEmailExists(email: string): Promise<Boolean> {
     const user = await AuthModel.findOne({ email: email })
-    console.log('cheking', user);
+  
     return user !== null
   }
   async createUser(data: IUser): Promise<IUser> {
@@ -150,9 +150,9 @@ export class AuthRepository implements IAuthRepository {
     const user = await AuthModel.findOne({ email: email })
     return user?.verified == true
   }
-  async tokenSave(data: IAuth, token: string): Promise<string> {
+  async tokenSave(data: IAuth, token: string,refreshToken:string): Promise<{token:string,refreshToken:string}> {
     await AuthModel.updateOne({ email: data.email }, { $push: { token: token } })
-    return token
+    return {token,refreshToken}
   }
   async profileImage(id: string): Promise<string> {
     try {

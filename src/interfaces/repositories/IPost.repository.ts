@@ -1,4 +1,5 @@
 import IPost from "../../entities/post.entity";
+import { IReport } from "../../entities/report.entity";
 import IUser from "../../entities/user.entity";
 
 export interface IPostRepository{
@@ -14,6 +15,8 @@ export interface IPostRepository{
   unSavePost(postId: string, user_id: string): Promise<IUser| null>
   savePost(postId: string, user_id: string): Promise<IUser|null>
   savedPosts(user_id: string): Promise<IPost[]>
+  createReport(postId: string, reporterId: string, description: string): Promise<IReport>
+  existingReport(postId: string, reporterId: string): Promise<boolean> 
 
   
 }

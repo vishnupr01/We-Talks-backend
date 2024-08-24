@@ -12,7 +12,6 @@ export const authMiddleware=async(req:AuthenticatedRequest,res:Response,next:Nex
     if(!authToken){
       return res.status(200).json({message:"not authenticated"})
     }
-    console.log("authtoken reached",authToken);
     
     const userData=verifyJWT(authToken) as JwtPayload
     console.log("hey",userData);

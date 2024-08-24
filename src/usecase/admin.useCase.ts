@@ -1,12 +1,16 @@
+import IPost from "../entities/post.entity";
+import { IReport } from "../entities/report.entity";
 import { ErrorCode } from "../enums/errorCodes";
 import IAdminRepository from "../interfaces/repositories/IAdmin.repository";
+import { IPostRepository } from "../interfaces/repositories/IPost.repository";
 import IAdminUseCase from "../interfaces/usecase/IAdmin.usecase";
 
 export class AdminUsecase implements IAdminUseCase {
   private adminRepository: IAdminRepository;
-
-  constructor(adminRepository: IAdminRepository) {
+  private postRepository: IPostRepository
+  constructor(adminRepository: IAdminRepository, postRepository: IPostRepository) {
     this.adminRepository = adminRepository;
+    this.postRepository = postRepository
   }
 
   async adminLogin(email: string, password: string): Promise<boolean> {
@@ -18,43 +22,121 @@ export class AdminUsecase implements IAdminUseCase {
     }
     return true; // Successfully authenticated
   }
-  async getAllUsers(page:number){
+  async getAllUsers(page: number) {
     try {
-      const Users=await this.adminRepository.getUsers(page)
-      if(!Users){
-       throw new Error("Error in loading")
+      const Users = await this.adminRepository.getUsers(page)
+      if (!Users) {
+        throw new Error("Error in loading")
       }
-      return Users  
+      return Users
     } catch (error) {
-       throw error
+      throw error
     }
-   
-}
-async blockingUser(email:string): Promise<boolean> {
-  try {
 
-    
-    const isBlocked=await this.adminRepository.blockUser(email)
-    console.log(isBlocked);
-    
-    if(!isBlocked){
-      throw new Error("server error")
-    }
-   return isBlocked
-  } catch (error) {
-    throw error
   }
-}
-async unBlockingUser(email:string): Promise<boolean> {
-  try {
-   
-    const isBlocked=await this.adminRepository.unblockUser(email)
-    if(!isBlocked){
-      throw new Error("server error")
+  async blockingUser(email: string): Promise<boolean> {
+    try {
+
+
+      const isBlocked = await this.adminRepository.blockUser(email)
+      console.log(isBlocked);
+
+      if (!isBlocked) {
+        throw new Error("server error")
+      }
+      return isBlocked
+    } catch (error) {
+      throw error
     }
-   return isBlocked
-  } catch (error) {
-    throw error
   }
+  async unBlockingUser(email: string): Promise<boolean> {
+    try {
+
+      const isBlocked = await this.adminRepository.unblockUser(email)
+      if (!isBlocked) {
+        throw new Error("server error")
+      }
+      return isBlocked
+    } catch (error) {
+      throw error
+    }
+  }
+  async dayDetails(): Promise<{ users: number[], posts: number[] }> {
+    try {
+      const response = await this.adminRepository.detailsDay();
+      if (!response) {
+        throw new Error("Server error");
+      }
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async monthDetails(): Promise<{ users: number[], posts: number[] }> {
+    try {
+      const response = await this.adminRepository.detailsMonth();
+      if (!response) {
+        throw new Error("Server error");
+      }
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async yearDetails(): Promise<{ users: number[], posts: number[] }> {
+    try {
+      const response = await this.adminRepository.detailsYear();
+      if (!response) {
+        throw new Error("Server error");
+      }
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async detailsTotal(): Promise<{ users: number, posts: number }> {
+    try {
+      const response = await this.adminRepository.totalDetails()
+      if (!response) {
+        throw new Error("server error")
+      }
+      return response
+
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async allReports(): Promise<IReport[]> {
+    try {
+      const response = await this.adminRepository.getAllReports()
+      if (!response) {
+        throw new Error("server Error")
+      }
+      return response
+
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getSinglePost(postId: string): Promise<IPost[]> {
+    try {
+      if (!postId) {
+        throw new Error("credential server error")
+      }
+      const response = await this.postRepository.getPostDetails(postId)
+      return response
+    } catch (error) {
+      throw error
+    }
+  }
+
+
 }
-}
+
+
+

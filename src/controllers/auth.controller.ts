@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { IAuthUsecase } from "../interfaces/usecase/IAuth.usecase";
 import { AuthenticatedRequest } from "../frameworks/middlewares/authmiddlewares";
-import { createJWT } from "../frameworks/utils/jwt.token";
+import { createJWT, verifyJWT } from "../frameworks/utils/jwt.token";
 import { JwtPayload } from "jsonwebtoken";
 export class AuthController {
   private authUsecase: IAuthUsecase
@@ -97,8 +97,8 @@ export class AuthController {
     }
   }
   isUser(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-    console.log("api working not");
-    console.log(req.user);
+    // console.log("api working not");
+    // console.log(req.user);
 
     if (req.user) {
       console.log("api working ");
@@ -115,7 +115,7 @@ export class AuthController {
       if (!body?.email || !body?.password) {
         throw new Error("Email and password are required")
       }
-      const token = await this.authUsecase.userSignin(body)
+      const { token, refreshToken } = await this.authUsecase.userSignin(body)
       console.log("toke", token);
       if (token === "user is Blocked") {
         res.status(200).json({ data: token })
@@ -129,7 +129,13 @@ export class AuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'none',
-        maxAge: 8 * 60 * 60 * 1000 // 8 hours
+        maxAge:  15 * 24 * 60 * 60 * 1000 // 8 hours
+      })
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none',
+        maxAge:  7 * 24 * 60 * 60 * 1000 // 8 hours
       })
       res.status(200).json({ status: 'success', data: token })
 
@@ -141,6 +147,11 @@ export class AuthController {
 
   async logOut(req: Request, res: Response, next: NextFunction) {
     res.clearCookie('authToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none'
+    });
+    res.clearCookie('refreshToken', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'none'
@@ -224,5 +235,38 @@ export class AuthController {
   async getToken(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     const { authToken } = req.cookies
     res.status(200).json({ status: 'success', data: authToken })
+  }
+
+  async newToken(req: Request, res: Response, next: NextFunction) {
+    try {
+      console.log("reaching newtoken");
+      
+      const { refreshToken } = req.cookies
+      const user = verifyJWT(refreshToken) as JwtPayload
+      if (!user) {
+        throw new Error("servor token error")
+      }
+      const checkUser = await this.authUsecase.checkUser(user.email)
+      if (!checkUser) {
+        throw new Error("user not found")
+      }
+     
+      
+      const newPayload = { id: user._id, name: user.name, email: user.email, image_url: user.profileImg, isBlocked: user.isBlocked };
+      const newAccessToken = createJWT(newPayload, '15m');
+      console.log("new one",newAccessToken);
+      
+      res.cookie('authToken', newAccessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none',
+        maxAge:  15 * 24 * 60 * 60 * 1000 // 8 hours
+      })
+
+    } catch (error) {
+ console.log(error)
+ throw error;
+ 
+    }
   }
 }

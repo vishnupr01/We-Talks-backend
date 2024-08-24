@@ -10,9 +10,9 @@ import { NotificationRepository } from '../../repository/notification.repository
 const router = express.Router()
 const postRepository = new PostRepository
 const cloudinaryService = new CloudinaryService
-const userRepository=new UserRepository()
-const notificationRepository=new NotificationRepository()
-const postUseCase = new PostUseCase(postRepository, cloudinaryService,userRepository,notificationRepository)
+const userRepository = new UserRepository()
+const notificationRepository = new NotificationRepository()
+const postUseCase = new PostUseCase(postRepository, cloudinaryService, userRepository, notificationRepository)
 const postController = new PostController(postUseCase)
 
 router.post('/createPost', authMiddleware, (req: Request, res: Response, next: NextFunction) => {
@@ -33,16 +33,19 @@ router.delete('/deletePost', authMiddleware, (req: Request, res: Response, next:
       postController.deletePost(req, res, next)
 })
 router.patch('/likePost', authMiddleware, (req: Request, res: Response, next: NextFunction) => {
-      postController.CheckLike(req,res,next)
+      postController.CheckLike(req, res, next)
 })
-router.get('/getLiked',authMiddleware,(req:Request,res:Response,next:NextFunction)=>{
-      postController.getLikedPosts(req,res,next)
+router.get('/getLiked', authMiddleware, (req: Request, res: Response, next: NextFunction) => {
+      postController.getLikedPosts(req, res, next)
 })
-router.patch('/savePost',authMiddleware,(req:Request,res:Response,next:NextFunction)=>{
-      postController.savePost(req,res,next)
+router.patch('/savePost', authMiddleware, (req: Request, res: Response, next: NextFunction) => {
+      postController.savePost(req, res, next)
 })
-router.get('/savedPosts',authMiddleware,(req:Request,res:Response,next:NextFunction)=>{
-      postController.postsSaved(req,res,next)
+router.get('/savedPosts', authMiddleware, (req: Request, res: Response, next: NextFunction) => {
+      postController.postsSaved(req, res, next)
+})
+router.post('/reportPost', authMiddleware, (req: Request, res: Response, next: NextFunction) => {
+      postController.newReport(req, res, next)
 })
 
 

@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt'
 import { generateOTP } from "../frameworks/utils/generateOtp";
 import { sendEmail } from "../frameworks/utils/sendEmail";
 import { comparePassword } from "../frameworks/utils/bcrypt"
-import { createJWT } from "../frameworks/utils/jwt.token";
+import { createJWT, createRefreshToken } from "../frameworks/utils/jwt.token";
 import { ErrorCode } from "../enums/errorCodes";
 
 export class AuthUsecase implements IAuthUsecase {
@@ -143,7 +143,10 @@ export class AuthUsecase implements IAuthUsecase {
      const user=response.user
     const payload = { id: user._id, name: user.name, email: user.email,  image_url: user.profileImg,isBlocked:user.isBlocked }
     const token = createJWT(payload, 5)
-    return await this.authRepository.tokenSave(data, token)
+    const refreshToken=createRefreshToken(payload)
+    console.log("refreshToken:",refreshToken);
+    
+    return await this.authRepository.tokenSave(data, token,refreshToken )
   }
 
 

@@ -260,14 +260,13 @@ export class UserRepository implements IUserRepository {
         String(blocked.blockedId) === String(blockId) && blocked.status !== "target"
       );
 
-      // Remove only the blocker entry from the blocked user's blockedUsers array
       blockedUser.blockedUsers = blockedUser.blockedUsers?.filter((blocked: IBlockedUser) =>
        String(blocked.blockedId)  === String(userId) && blocked.status !== "blocker"
       );
       console.log("user", user.blockedUsers);
       console.log("blockedUser", blockedUser.blockedUsers);
 
-      // Save the updated user and blockedUser documents
+    
       const updatedUser = await user.save();
       await blockedUser.save();
 

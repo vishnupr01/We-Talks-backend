@@ -10,7 +10,7 @@ export interface IAuthRepository{
   verifyUser(email:string):Promise<IAuth | null>
  emailAuth(email: string): Promise<{ user: IUser; auth: IAuth }>;
   checkUserVerified(email:string):Promise<boolean>
-  tokenSave(data:IAuth,token:string):Promise<string>
+  tokenSave(data: IAuth, token: string,refreshToken:string): Promise<{token:string,refreshToken:string}>
   profileImage(id:string):Promise<string> 
   googleUser(data: IUser): Promise<IUser>
   updateGoogle(_id:string,userName:string,dob:Date):Promise<any>

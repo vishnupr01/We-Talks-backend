@@ -52,5 +52,8 @@ router.patch('/changePass',(req:Request,res:Response,next:NextFunction)=>{
 router.get('/getToken',(req:Request,res:Response,next:NextFunction)=>{
    authController.getToken(req,res,next)
 })
+router.post('/refreshToken',(req:Request,res:Response,next:NextFunction)=>{
+  authController.newToken(req,res,next)
+})
  
 export default router

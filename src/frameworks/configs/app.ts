@@ -9,6 +9,7 @@ import userRouter from '../routes/user.route'
 import commentRouter from '../routes/comment.route'
 import messageRouter from '../routes/message.route'
 import notificationRouter from '../routes/notification.route'
+import roomRouter from '../routes/room.routes'
 
 
 
@@ -48,6 +49,7 @@ console.log("route reacher");
 
 app.use('/api/messages/', messageRouter)
 app.use('/api/notifications', notificationRouter)
+app.use('/api/room/',roomRouter)
 
 
 

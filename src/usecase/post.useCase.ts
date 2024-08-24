@@ -10,6 +10,7 @@ import INotificationRepository from "../interfaces/repositories/INotification.re
 import { NOTIFICATION_TYPE } from "../enums/notification";
 import { getRecieverId } from "../frameworks/configs/socketioHandlers";
 import { io } from "../server";
+import { IReport } from "../entities/report.entity";
 
 export class PostUseCase implements IPostUseCase {
   private postRepository: IPostRepository
@@ -107,9 +108,9 @@ export class PostUseCase implements IPostUseCase {
         const getPost: IPost[] = await this.postRepository.getPostDetails(postId)
         const receiverId = new mongoose.Types.ObjectId(getPost[0].creator_id)
         const post_Id = new mongoose.Types.ObjectId(getPost[0]._id)
-        console.log("sender",sender._id);
-        console.log("receiver",getPost[0].creator_id);
-        
+        console.log("sender", sender._id);
+        console.log("receiver", getPost[0].creator_id);
+
         if (String(sender._id) === String(getPost[0].creator_id)) {
           console.log("working self");
           return this.postRepository.likePost(postId, userId)
@@ -188,6 +189,19 @@ export class PostUseCase implements IPostUseCase {
     } catch (error) {
       throw error
 
+    }
+  }
+  async createReport(post_id: string, reporter_id: string, description: string): Promise<IReport|string> {
+    try {
+      if (!post_id || !reporter_id || !description) {
+        throw new Error("credential server error")
+      }
+      const isExist = await this.postRepository.existingReport(post_id, reporter_id)
+      if (isExist) return "report exists"
+      const response = await this.postRepository.createReport(post_id, reporter_id, description)
+      return response
+    } catch (error) {
+      throw error
     }
   }
 

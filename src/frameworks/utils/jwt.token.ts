@@ -1,9 +1,14 @@
 import * as jwt from 'jsonwebtoken'
 const JWT_SECRET=process.env.JWT_SECRET || "secert_key"
+const REFRESH_TOKEN_SECRET=process.env.REFRESH_TOKEN_SECRET || "refresh_secret_key"
 
 export function createJWT(payload:object,expiresIN:string | number):string{
-const accessToken=jwt.sign(payload,JWT_SECRET)
+const accessToken=jwt.sign(payload,JWT_SECRET,{expiresIn:"1d"})
 return accessToken
+}
+export function createRefreshToken(payload: object): string {
+  const refreshToken = jwt.sign(payload,JWT_SECRET, { expiresIn: '7d' });
+  return refreshToken; 
 }
 
 export function verifyJWT<T>(token:string):T | null{
