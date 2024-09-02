@@ -21,7 +21,7 @@ app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true }))
 
 const allowOrgins = [
-  'http://localhost:5173'
+  'https://we-talks-frontend.vercel.app'
 ]
 app.use(cors({
   origin: allowOrgins,
