@@ -6,7 +6,7 @@ export default function initializeSocketIO(server:HttpServer){
   const io=new Server(server,{
     cors:{
       origin:[
-        "https://we-talks-frontend.vercel.app/"
+        "https://we-talks-frontend.vercel.app"
       ],
       methods:["GET","POST"],
       credentials:true  
