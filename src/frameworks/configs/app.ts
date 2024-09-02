@@ -20,15 +20,13 @@ dotenv.config()
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true }))
 
-const allowOrgins = [
-  'https://we-talks-frontend.vercel.app'
-]
-app.use(cors({
-  origin: allowOrgins,
-  optionsSuccessStatus: 200,
-  credentials: true
+const allowOrigins = ['https://we-talks-frontend.vercel.app'];
 
-}))
+app.use(cors({
+  origin: allowOrigins,
+  optionsSuccessStatus: 200,
+  credentials: true,
+}));
 
 app.use(cookieParser())
 
