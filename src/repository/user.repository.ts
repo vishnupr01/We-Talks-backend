@@ -47,7 +47,8 @@ export class UserRepository implements IUserRepository {
               images: 1,
               createdAt: 1,
               updatedAt: 1,
-              likes: 1
+              likes: 1,
+              blocked:1,
 
             }
           }
@@ -135,7 +136,7 @@ export class UserRepository implements IUserRepository {
   }
   async searchFriends(userId: string, query: string): Promise<IUser[]> {
     try {
-
+         
       const user = await UserModel.findById(userId).lean();
       if (!user) {
         throw new Error("User not found or user has no friends");
@@ -211,6 +212,7 @@ export class UserRepository implements IUserRepository {
   }
   async blockUser(user_id: string, block_id: string): Promise<Partial<IUser> | null> {
     try {
+      user_id="jkkfndj"
       const userId = new mongoose.Types.ObjectId(user_id);
       const blockId = new mongoose.Types.ObjectId(block_id);
 
@@ -273,6 +275,77 @@ export class UserRepository implements IUserRepository {
       return updatedUser.toObject() as Partial<IUser> | null;
     } catch (error) {
       console.error("Error unblocking user:", error);
+      throw error;
+    }
+  }
+  async findMutualFriends(userId: string): Promise<any[]> {
+    try {
+      const objectId = new mongoose.Types.ObjectId(userId);
+      const user = await UserModel.findById(objectId).lean();
+  
+      if (!user) {
+        throw new Error('User not found');
+      }
+  
+      const userFriends = user.friends; // List of user's friends
+  
+      // Find friends of friends who are not direct friends with the user
+      const friendsOfFriends = await UserModel.aggregate([
+        {
+          $match: {
+            _id: { $in: userFriends }, // Match the user's friends
+          },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'friends',
+            foreignField: '_id',
+            as: 'friendsOfFriendsDetails',
+          },
+        },
+        {
+          $unwind: '$friendsOfFriendsDetails',
+        },
+        {
+          $match: {
+            'friendsOfFriendsDetails._id': {
+              $nin: [...userFriends, objectId], // Exclude the user's friends and the user themself
+            },
+          },
+        },
+        {
+          $group: {
+            _id: '$friendsOfFriendsDetails._id',
+            name: { $first: '$friendsOfFriendsDetails.name' },
+            profileImg: { $first: '$friendsOfFriendsDetails.profileImg' },
+            mutualFriend: { $first: '$name' }, // Add the mutual friend's name (original friend's name)
+            mutualFriendId: { $first: '$_id' }, // Add the mutual friend's ID
+          },
+        },
+      ]).exec();
+  
+      console.log("Friends of friends who are not direct friends:", friendsOfFriends);
+  
+      return friendsOfFriends;
+    } catch (error) {
+      console.error('Error finding friends of friends:', error);
+      throw error;
+    }
+  }
+  async deleteFriendRequestById(requestId: string): Promise<boolean> {
+    try {
+      const objectId = new mongoose.Types.ObjectId(requestId);
+      const result = await FriendRequest.deleteOne({ _id: objectId });
+      if (result.deletedCount === 1) {
+        console.log(`Friend request with ID ${requestId} deleted successfully.`);
+        return true; // Indicates successful deletion
+      } else {
+        console.log(`No friend request found with ID ${requestId}.`);
+        return false; // Indicates no request was deleted
+      }
+    } catch (error) {
+      console.error('Error deleting friend request:', error);
       throw error;
     }
   }

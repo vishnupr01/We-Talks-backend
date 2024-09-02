@@ -7,12 +7,15 @@ export default interface IAdminUseCase {
   getAllUsers(page: number): Promise<any>
   blockingUser(email: string): Promise<boolean>
   unBlockingUser(email: string): Promise<boolean>
-  yearDetails(): Promise<{ users: number[], posts: number[]  }>
-  monthDetails(): Promise<{users: number[], posts: number[]  }>
-  dayDetails(): Promise<{ users: number[], posts: number[]  }>
-  detailsTotal(): Promise<{ users: number, posts: number }> 
-  allReports(): Promise<IReport[]> 
-  getSinglePost(postId: string): Promise<IPost[]>
+  yearDetails(): Promise<{ users: number[], posts: number[] }>
+  monthDetails(): Promise<{ users: number[], posts: number[] }>
+  dayDetails(): Promise<{ users: number[], posts: number[] }>
+  detailsTotal(): Promise<{ users: number, posts: number }>
+  allReports(): Promise<IReport[]>
+  getSinglePost(postId: string, reportId: string): Promise<IPost[]>
+  blockPost(postId: string): Promise<boolean>
+  unblockPost(postId: string): Promise<boolean>
+  getAllBlockedPosts(page: number, limit: number): Promise<{ posts: IPost[], totalBlockedPosts: number }>
 
 
 }

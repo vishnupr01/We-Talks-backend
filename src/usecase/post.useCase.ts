@@ -191,14 +191,14 @@ export class PostUseCase implements IPostUseCase {
 
     }
   }
-  async createReport(post_id: string, reporter_id: string, description: string): Promise<IReport|string> {
+  async createReport(post_id: string, reporter_id: string, description: string,category:string): Promise<IReport|string> {
     try {
-      if (!post_id || !reporter_id || !description) {
+      if (!post_id || !reporter_id || !description||!category) {
         throw new Error("credential server error")
       }
       const isExist = await this.postRepository.existingReport(post_id, reporter_id)
       if (isExist) return "report exists"
-      const response = await this.postRepository.createReport(post_id, reporter_id, description)
+      const response = await this.postRepository.createReport(post_id, reporter_id, description,category)
       return response
     } catch (error) {
       throw error

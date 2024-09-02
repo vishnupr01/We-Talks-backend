@@ -91,12 +91,12 @@ export class UserController {
   async searchUsers(req: Request, res: Response, next: NextFunction) {
     try {
       const { query } = req.query
-
+      
       const response = await this.userUseCase.getSearchUsers(query as string)
       res.status(200).json({ status: "success", data: response })
 
     } catch (error: any) {
-      res.status(400).json({ message: error.message })
+      res.status(500).json({ message: error.message })
     }
   }
 
@@ -143,7 +143,7 @@ export class UserController {
       const response = await this.userUseCase.blockUser(userId, blockId as string)
       res.status(200).json({ status: "success", data: response })
     } catch (error: any) {
-      res.status(400).json({ message: error.message })
+      res.status(500).json({ message: error.message })
     }
   }
 
@@ -156,6 +156,36 @@ export class UserController {
       res.status(200).json({ status: "success", data: response })
     } catch (error: any) {
       res.status(400).json({ message: error.message })
+    }
+  }
+  async getMutualFriends(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const user = req.user as JwtPayload;
+      const userId = user.id;
+
+      const mutualFriends = await this.userUseCase.getMutualFriends(userId);
+      console.log("controller mutual",mutualFriends);
+      
+      res.status(200).json({ status: "success", data: mutualFriends });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+  async deleteFriendRequest(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const { requestId } = req.params;
+      if (!requestId) {
+        return res.status(400).json({ message: "Request ID is required" });
+      }
+
+      const wasDeleted = await this.userUseCase.deleteFriendRequestById(requestId);
+      if (wasDeleted) {
+        return res.status(200).json({ status: "success", message: "Friend request deleted successfully" });
+      } else {
+        return res.status(404).json({ status: "fail", message: "Friend request not found" });
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 }

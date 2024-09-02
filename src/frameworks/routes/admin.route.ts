@@ -66,4 +66,17 @@ router.get('/getReports', (req: Request, res: Response, next: NextFunction) => {
 router.get('/postManage', (req: Request, res: Response, next: NextFunction) => {
   adminController.getSinglePostDetail(req, res, next)
 })
+
+router.patch('/blockPost', (req: Request, res: Response, next: NextFunction) => {
+  adminController.blockPost(req, res, next);
+});
+
+
+router.patch('/unblockPost', (req: Request, res: Response, next: NextFunction) => {
+  adminController.unblockPost(req, res, next);
+});
+
+router.get('/blockedPosts', (req: Request, res: Response, next: NextFunction) => {
+  adminController.getAllBlockedPosts(req, res, next);
+});
 export default router

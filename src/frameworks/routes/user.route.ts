@@ -46,6 +46,12 @@ router.patch('/blockUser', authMiddleware, (req: Request, res: Response, next: N
 router.patch('/unblockUser', authMiddleware, (req: Request, res: Response, next: NextFunction) => {
   userController.unBlockeUser(req, res, next)
 })
+router.get('/mutualFriends', authMiddleware, (req: Request, res: Response, next: NextFunction) => {
+  userController.getMutualFriends(req, res, next);
+});
+router.delete('/deleteRequest/:requestId', authMiddleware, (req: Request, res: Response, next: NextFunction) => {
+  userController.deleteFriendRequest(req, res, next);
+});
 
 
 

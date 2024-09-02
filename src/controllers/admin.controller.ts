@@ -163,12 +163,54 @@ export default class AdminController {
 
   async getSinglePostDetail(req: Request, res: Response, next: NextFunction) {
     try {
-      const { postId } = req.query
-      const response = await this.adminUsecase.getSinglePost(postId as string)
+      const { postId,reportId } = req.query
+      console.log("reportId",reportId);
+      
+      const response = await this.adminUsecase.getSinglePost(postId as string,reportId as string )
       res.status(201).json({ status: "success", data: response });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
 
+    }
+  }
+  async blockPost(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { postId } = req.body;
+      if (!postId) {
+        return res.status(400).json({ message: "Post ID is required" });
+      }
+
+      const blocked = await this.adminUsecase.blockPost(postId);
+      res.status(200).json({ status: 'success', data: blocked });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+
+  async unblockPost(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { postId } = req.body;
+      if (!postId) {
+        return res.status(400).json({ message: "Post ID is required" });
+      }
+
+      const unblocked = await this.adminUsecase.unblockPost(postId);
+      res.status(200).json({ status: 'success', data: unblocked });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  async getAllBlockedPosts(req: Request, res: Response, next: NextFunction) {
+    try {
+      const page: number = parseInt(req.query.page as string) || 1;
+      const limit: number = parseInt(req.query.limit as string) || 10;
+
+      const response = await this.adminUsecase.getAllBlockedPosts(page, limit);
+      res.status(200).json({ status: 'success', data: response });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   }
 

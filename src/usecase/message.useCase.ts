@@ -30,7 +30,7 @@ export class MessageUseCase implements IMessageUseCase {
       if(checkId){ 
         console.log("entering on socket");
           
-      io.to(receiverId).emit("newMessage",createdMessage)
+      io.to(receiverId).emit("newMessage",{createdMessage,senderId})
       }
       if (!createdMessage) {
         throw new Error("server error on useCase")  

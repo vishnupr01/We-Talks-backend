@@ -14,6 +14,8 @@ export interface IUserUseCase{
   searchAFriend(userId:string,query:string):Promise<IUser[]>
   blockUser(userId: string, blockId: string): Promise<Partial<IUser> | null>
   unBlockFriend(user_id: string, blockId: string): Promise<Partial<IUser> | null>
+  getMutualFriends(userId: string): Promise<any[]>
+  deleteFriendRequestById(requestId: string): Promise<boolean>
   
   
 

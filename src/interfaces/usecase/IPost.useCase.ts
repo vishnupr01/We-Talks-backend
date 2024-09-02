@@ -12,5 +12,5 @@ export interface IPostUseCase{
   getLiked(userId: string): Promise<IPost[]>
   isSaved(postId:string,userId:string):Promise<IUser|null>
   getAllSavedPosts(user_id:string):Promise<IPost[]>
-  createReport(post_id: string, reporter_id: string, description: string): Promise<IReport|string>
+  createReport(post_id: string, reporter_id: string, description: string,category:string): Promise<IReport|string>
 }

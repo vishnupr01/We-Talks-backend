@@ -10,5 +10,7 @@ export interface IUserRepository{
   searchFriends(userId: string, query: string): Promise<IUser[]>
   blockUser(user_id: string, block_id: string): Promise<Partial<IUser> | null> 
   unblockUser(user_id: string, block_id: string): Promise<Partial<IUser> | null>
+  findMutualFriends(userId: string): Promise<any[]>
+  deleteFriendRequestById(requestId: string): Promise<boolean>
   
 }

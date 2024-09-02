@@ -28,6 +28,10 @@ const PostSchema:Schema=new Schema({
   savedUser:{
     type:[String],
     default:[]
+  },
+  blocked:{
+    type:Boolean,
+    default:false
   }
 
 },{timestamps:true})

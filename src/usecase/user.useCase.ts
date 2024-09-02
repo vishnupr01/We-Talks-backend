@@ -162,4 +162,30 @@ export class UserUseCase implements IUserUseCase {
       throw error
     }
   }
+  async getMutualFriends(userId: string): Promise<any[]> {
+    try {
+      console.log("Fetching mutual friends for user:", userId);
+      const mutualFriends = await this.userRepository.findMutualFriends(userId);
+      if (!mutualFriends) {
+        throw new Error("No mutual friends found");
+      }
+      return mutualFriends;
+    } catch (error) {
+      console.error("Error in use case:", error);
+      throw error;
+    }
+  }
+  async deleteFriendRequestById(requestId: string): Promise<boolean> {
+    try {
+      console.log("Deleting friend request with ID:", requestId);
+      const wasDeleted = await this.userRepository.deleteFriendRequestById(requestId);
+      if (!wasDeleted) {
+        throw new Error("Friend request not found or already deleted");
+      }
+      return wasDeleted;
+    } catch (error) {
+      console.log("Error in deleteFriendRequestById use case:", error);
+      throw error;
+    }
+  }
 }

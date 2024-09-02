@@ -161,10 +161,14 @@ export class PostController {
     try {
       const user = req.user as JwtPayload
       const reporter_id = user.id
-      const { post_id, description } = req.body
+      const { post_id, description,category } = req.body
+      console.log("checking type of description",typeof description );
+      console.log("report category",category);
+      
+      
       console.log("controller for report",post_id);
       
-      const response = await this.postUseCase.createReport(post_id, reporter_id, description)
+      const response = await this.postUseCase.createReport(post_id, reporter_id, description,category)
       res.status(201).json({ status: "success", data: response })
     } catch (error: any) {
       console.log(error);
@@ -172,5 +176,7 @@ export class PostController {
 
     }
   }
+
+  
 }
 

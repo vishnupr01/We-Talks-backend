@@ -123,15 +123,52 @@ export class AdminUsecase implements IAdminUseCase {
     }
   }
 
-  async getSinglePost(postId: string): Promise<IPost[]> {
+  async getSinglePost(postId: string,reportId:string): Promise<IPost[]> {
     try {
       if (!postId) {
         throw new Error("credential server error")
       }
-      const response = await this.postRepository.getPostDetails(postId)
+      const response = await this.adminRepository.getSingleReportDetails(reportId)
       return response
     } catch (error) {
       throw error
+    }
+  }
+  async blockPost(postId: string): Promise<boolean> {
+    try {
+      const isBlocked = await this.adminRepository.blockPost(postId);
+      if (!isBlocked) {
+        throw new Error("Failed to block post");
+      }
+      return isBlocked;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
+  async unblockPost(postId: string): Promise<boolean> {
+    try {
+      const isUnblocked = await this.adminRepository.unblockPost(postId);
+      if (!isUnblocked) {
+        throw new Error("Failed to unblock post");
+      }
+      return isUnblocked;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
+  async getAllBlockedPosts(page: number = 1, limit: number = 10): Promise<{ posts: IPost[], totalBlockedPosts: number }> {
+    try {
+      const response = await this.adminRepository.getAllBlockedPosts(page, limit);
+      if (!response) {
+        throw new Error("Failed to fetch blocked posts");
+      }
+      return response;
+    } catch (error) {
+      throw error;
     }
   }
 

@@ -30,7 +30,13 @@ export class PostRepository implements IPostRepository {
 
 
       // const Response=await PostModel.find({}).sort({createdAt:-1}).skip(skip).limit(limit).exec()
-      const Response = await PostModel.aggregate([{
+      const Response = await PostModel.aggregate([
+        {
+          $match: {
+            blocked: false  // Add this match stage to filter out blocked posts
+          }
+        },
+        {
         $lookup: {
           from: 'users',
           localField: 'creator_id',
@@ -255,21 +261,28 @@ export class PostRepository implements IPostRepository {
       const savedPostIds = user?.saved?.map(id => new mongoose.Types.ObjectId(id));
       console.log("what happening", savedPostIds);
 
-      const posts = await PostModel.find({ _id: { $in: savedPostIds } }).exec()
+      const posts = await PostModel.find({
+        _id: { $in: savedPostIds },
+        blocked: false  
+      }).exec();
+      
 
       return posts as IPost[]
     } catch (error) {
       throw error
     }
   }
-  async createReport(postId: string, reporterId: string, description: string): Promise<IReport> {
+  async createReport(postId: string, reporterId: string, description: string,category:string): Promise<IReport> {
     console.log("postid in repository", postId);
+    console.log("category in repo",category);
+    
 
     try {
       const newReport = new reportModel({
         postId,
         reporterId,
-        description
+        description,
+        category
       });
 
       await newReport.save();
